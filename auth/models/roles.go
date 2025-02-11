@@ -1,12 +1,15 @@
 package models
 
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"golang.org/x/exp/slices"
+)
 
 type UserRole string
 
 const (
-	RoleApi UserRole = "api"
-
+	RoleApi     UserRole = "api"
 	RoleTest    UserRole = "test"
 	RoleFree    UserRole = "free"
 	RolePioneer UserRole = "pioneer"
@@ -19,7 +22,6 @@ const (
 var RoleHierarchy = map[UserRole][]UserRole{
 	RoleFree:    {},
 	RolePioneer: {RoleFree},
-
 	RoleModern:  {RoleFree, RolePioneer},
 	RoleLegacy:  {RoleFree, RolePioneer, RoleModern},
 	RoleVintage: {RoleFree, RolePioneer, RoleModern, RoleLegacy},
@@ -50,5 +52,8 @@ func (r UserRole) IsValid() bool {
 		return true
 	}
 	return false
+}
 
+func (r UserRole) HasAccess(targetRole UserRole) bool {
+	return slices.Contains(RoleHierarchy[r], targetRole)
 }
